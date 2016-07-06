@@ -1,0 +1,60 @@
+<!-- $Id: category_list.htm 17019 2010-01-29 10:10:34Z liuhui $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ECSHOP 管理中心 - 文章分类 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__CSS__/general.css" rel="stylesheet" type="text/css" />
+<link href="__CSS__/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<h1>
+    <span class="action-span"><a href="{:U('/Article/add')}">添加子类</a></span>
+    <span class="action-span1"><a href="{:U('Index/main')}">ECSHOP 管理中心</a></span>
+    <span id="search_id" class="action-span1"> - 文章分类 </span>
+    <div style="clear:both"></div>
+</h1>
+<form action="{:U('index')}" method="post">
+<select name="pid">
+    <foreach name="row" item="row1">
+        <option value="{$row1.id}">{$row1.name}</option>
+        <!--<input type="hidden" value="{$row1.id}" name="pid"/>-->
+    </foreach>
+</select>
+    {:arr2select($row,'name','id','id',I('get.id'))}
+<input type="submit" value="确认">
+</form>
+
+<form method="post" action="{:U()}" name="listForm">
+    <div class="list-div" id="listDiv">
+        <table width="100%" cellspacing="1" cellpadding="2" id="list-table">
+            <tr>
+                <th>分类文章</th>
+                <th>父级文章</th>
+                <th>操作</th>
+            </tr>
+
+            <foreach name="rows" item="row">
+            <tr>
+                <td>{$row['name']}</td>
+                <td>{$name['name']}</td>
+                <td>
+                    <a href="{:U('read',array('id'=>$row['id']))}">查看内容</a>
+                    <a href="{:U('remove',array('id'=>$row['id']))}">删除子类</a>
+                    <a href="{:U('edit',array('id'=>$row['id']))}">修改文章</a>
+                </td>
+            </tr>
+            </foreach >
+        </table>
+    </div>
+</form>
+<div id="footer">
+共执行 1 个查询，用时 0.055904 秒，Gzip 已禁用，内存占用 2.202 MB<br />
+版权所有 &copy; 2005-2012 上海商派网络科技有限公司，并保留所有权利。</div>
+<!--<js href='__JS__/jquery.min.js'/>-->
+<!--<script type='text/javascript'>-->
+     <!--$('')-->
+<!--</script>-->
+</body>
+</html>

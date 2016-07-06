@@ -13,14 +13,17 @@ use Think\Controller;
 
 class SupplierController extends Controller
 {
-    //?建公用model
-
+    //建公用model
+//    private $_model = null;
+//    protected function _initialize(){
+//        $this->_model = D('Supplier');
+//    }
     //1.显示供应商管理页面
      public function index(){
          $model=D('Supplier');
          //写搜索功能
          $key=I('get.keyword');
-         $cond['status']=['egt',0];
+         $cond['status']=['egt',0];//写显示
          if($key){
              $cond['name']=['like','%'.$key.'%'];
          }

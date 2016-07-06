@@ -1,0 +1,110 @@
+<!-- $Id: category_info.htm 16752 2009-10-20 09:59:38Z wangleisvn $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ECSHOP 管理中心 - 添加分类 </title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="__CSS__/general.css" rel="stylesheet" type="text/css" />
+    <link href="__CSS__/main.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="__ZTREE__/css/zTreeStyle/zTreeStyle.css" type="text/css"/>
+    <style type="text/css">
+        ul.ztree{
+            margin-top: 10px;
+            border: 1px solid #617775;
+            background: #f0f6e4;
+            width: 220px;
+            overflow-y: scroll;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+<h1>
+    <span class="action-span"><a href="{:U('index')}">文章分类</a></span>
+    <span class="action-span1"><a href="__GROUP__">ECSHOP 管理中心</a></span>
+    <span id="search_id" class="action-span1"> - 添加分类 </span>
+    <div style="clear:both"></div>
+</h1>
+<div class="main-div">
+    <form action="{:U('add')}" method="post" name="theForm" enctype="multipart/form-data">
+        <table width="100%" id="general-table">
+            <tr>
+                <td class="label">商品分类名称:</td>
+                <td>
+                    <input type='text' name='name' maxlength="20" value='' size='27' /> <font color="red">*</font>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">父级分类:</td>
+                <td>
+                    <input type="hidden" name="parent_id" id='parent_id'/>
+                    <input type='text' disabled='disabled' id='parent_name' style="padding-left:1em;"/>
+                    <ul id="goods_categories" class="ztree"></ul>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">商品分类描述:</td>
+                <td>
+                    <input type="text" name='intro'   size="15" />
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="label">是否显示:</td>
+                <td>
+                    <input type="radio" name="status" value="1"  checked="checked"/> 是
+                    <input type="radio" name="status" value="0"  /> 否
+                </td>
+            </tr>
+            <tr>
+        </table>
+        <div class="button-div">
+            <input type="hidden" name="id" value="{$row.id}" />
+            <input type="submit" value=" 确定 " />
+            <input type="reset" value=" 重置 " />
+        </div>
+    </form>
+</div>
+
+<div id="footer">
+    共执行 3 个查询，用时 0.162348 秒，Gzip 已禁用，内存占用 2.266 MB<br />
+    版权所有 &copy; 2005-2012 上海商派网络科技有限公司，并保留所有权利。</div>
+<!--引入Ztreed的JS文件-->
+<js href='__JS__/jquery.min.js'/>
+<script type="text/javascript" src="__ZTREE__/js/jquery.ztree.core.js"></script>
+<script type='text/javascript'>
+    // 1.写设置ztree设置
+    var setting={
+        //数据
+        data:{
+            simpleData: {
+                enable: true,
+                pIdKey: 'parent_id',  //父ID的name
+            },
+        },
+        //选中分类后回显到父级分类框中
+        callback:{
+            onClick:function(event,node,item){ //event事件对象,node点击的节点对象,item点击的节点名称
+            $('#parent_id').val(item.id);
+            $('#parent_name').val(item.name);
+            },
+        },
+    };
+        //接收传过来的json数据,定义为节点名字
+        var goods_categories={$goods_categories};
+
+       $(function(){
+           //1.初始化ztree插件(固有写法)（里面参数分别为js选中的节点位置，配置，节点名字）
+           var goods_category_ztree = $.fn.zTree.init($("#goods_categories"), setting, goods_categories);
+           //2.展开所有的节点
+           goods_category_ztree.expandAll(true);
+
+       });
+
+
+</script>
+
+</body>
+</html>

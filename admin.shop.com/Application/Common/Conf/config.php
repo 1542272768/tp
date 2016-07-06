@@ -7,7 +7,12 @@ return array(
     'TMPL_PARSE_STRING'=>[
         '__CSS__'=>BASE_URL.'/Public/Admin/css',
         '__IMG__'=>BASE_URL.'/Public/Admin/images',
-        '__JS__'=>BASE_URL.'./Public/Admin/js',
+        '__JS__'=>BASE_URL.'/Public/Admin/js',
+        '__UPLOADIFY__'=>BASE_URL.'/Public/Admin/ext/uploadify',
+        '__LAYER__'=>BASE_URL.'/Public/Admin/ext/layer',
+        '__ZTREE__'=>BASE_URL.'/Public/Admin/ext/ztree',
+        '__TREEGRID__'=>BASE_URL.'/Public/Admin/ext/treegrid',
+        '__UEDITOR__'=>BASE_URL.'/Public/Admin/ext/ueditor',
     ],
     //设置单模块模式
     define('BIND_MODULE','Admin'),
@@ -38,6 +43,51 @@ return array(
         'PAGE_SIZE'=>2,//分页页数
         //分页样式
         'PAGE_THEME'=>'%HEADER% %FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END%',
-    ]
+    ],
+
+    //上传文件插件UPLOADIFY
+    'UPLOAD_SETTING'=>  [
+        'rootPath'     => ROOT_PATH,
+        'savePath'     => 'uploads/',
+        'mimes'        => array(), //允许上传的文件MiMe类型
+        'maxSize'      => 0, //上传的文件大小限制 (0-不做限制)
+        'exts'         => array(), //允许上传的文件后缀
+        'autoSub'      => true, //自动子目录保存文件
+        'subName'      => array('date', 'Y-m-d'), //子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
+        'saveName'     => array('uniqid', ''), //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
+        'saveExt'      => '', //文件保存后缀，空则使用原后缀
+        'replace'      => false, //存在同名是否覆盖
+        'hash'         => true, //是否生成hash编码
+        'callback'     => false, //检测文件是否存在回调，如果存在返回文件信息数组
+
+        'driver'       => '', // CDN文件上传驱动'Qiniu'
+//        'driverConfig' => array(
+//            'secretKey' => 'NMZ_hf9zIEsUJ3z5l6r-SaykwwFRE6zFWJfrdjyU', //SK   要看tp/ThinkPHP/Library/Think/Upload/Driver/Qiniu.class.php中
+//            'accessKey'  => '5Cj8JsbjPH0amQqVY58Wbq5YxM62iBJL40AWucwE', //AK
+//            'domain'     => 'o9helspjr.bkt.clouddn.com', //域名
+//            'bucket'     => 'tp0330', //空间名称
+//            'timeout'    => 300, //超时时间
+//        ), // 上传驱动配置
+    ],
+
+    //行为忽略列表
+    'ACCESS_IGNORE'=>[
+        'IGNORE'=>[  //所有人都可见的页面
+            'Admin/Admin/login',
+            'Admin/Captcha/captcha',
+        ],
+        'USER_IGNORE'=>[    //登陆后都可见的页面
+             'Admin/Index/index',
+             'Admin/Index/top',
+             'Admin/Index/menu',
+             'Admin/Index/main',
+             'Admin/Admin/logout',
+             'Admin/Admin/changePassword',
+             'Admin/Admin/reset',
+        ],
+    ],
+    //cookie加前缀
+    'COOKIE_PREFIX'         =>  'admin_shop_com_',
+
 
 );

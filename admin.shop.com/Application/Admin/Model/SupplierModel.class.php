@@ -31,7 +31,7 @@ class SupplierModel extends Model
         $pz=C('PAGE_SETTING');
         //获取总行数
         $count=$this->where($cond)->count();
-        //创类
+        //创分页类
         $page=new \Think\Page($count,$pz['PAGE_SIZE']);//括号里传的是(总行数,每页显示数)
         //更改样式
         $page->setConfig('theme',$pz['PAGE_THEME']);
@@ -41,6 +41,11 @@ class SupplierModel extends Model
         //查询数据显示page括号中传的是(第几页，每页条数)，1为默认第一页
         $rows=$this->where($cond)->page(I('get.p',1),$pz['PAGE_SIZE'])->select();
         return compact(['rows','page_html']);
+    }
+
+    //查找本表数据
+    public function getList(){
+        return $this->where(array('status'=>['gt',0]))->select();
     }
 
 }

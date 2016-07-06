@@ -1,0 +1,110 @@
+<!-- $Id: brand_info.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ECSHOP 管理中心 - 添加品牌 </title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="__CSS__/general.css" rel="stylesheet" type="text/css" />
+    <link href="__CSS__/main.css" rel="stylesheet" type="text/css" />
+
+    <css href='__UPLOADIFY__/common.css'/>
+    <js href='__JS__/jquery.min.js'/>
+    <js href='__UPLOADIFY__/jquery.uploadify.min.js'/>
+    <js href='__LAYER__/layer.js'/>
+</head>
+<body>
+<h1>
+    <span class="action-span"><a href="{:U('index')}">品牌管理</a></span>
+    <span class="action-span1"><a href="#">ECSHOP 管理中心</a></span>
+    <span id="search_id" class="action-span1"> - 添加品牌 </span>
+    <div style="clear:both"></div>
+</h1>
+<div class="main-div">
+    <form method="post" action="{:U('add')}" enctype="multipart/form-data" >
+        <table cellspacing="1" cellpadding="3" width="100%">
+            <tr>
+                <td class="label">品牌名称</td>
+                <td>
+                    <input type="text" name="name" maxlength="60" value="" />
+                    <span class="require-field">*</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label">品牌介绍</td>
+                <td>
+                    <textarea  name="intro" cols="60" rows="4"  ></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label">品牌logo</td>
+                <td>
+                    <!--保存到数据库数据-->
+                    <input type="hidden" name="logo" id="logo" value="{$row['logo']}"/>
+                    <!--这个是为了给js传个ID改变样式-->
+                    <input type="file" id="logo_file" />
+                    <!--上传图片后显示出来-->
+                    <img src="{$row['logo']}" id="logo_p" width="100" style="display:block;">
+                </td>
+            </tr>
+
+            <tr>
+                <td class="label">排序</td>
+                <td>
+                    <input type="text" name="sort" maxlength="40" size="15" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td class="label">是否显示</td>
+                <td>
+                    <input type="radio" name="status" value="1" checked="checked" /> 是
+                    <input type="radio" name="status" value="0"  /> 否(当品牌下还没有商品的时候，首页及分类页的品牌区将不会显示该品牌。)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center"><br />
+                    <input type="submit" class="button" value=" 添加 " />
+                    <input type="reset" class="button" value=" 重置 " />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="footer">
+    共执行 1 个查询，用时 0.018952 秒，Gzip 已禁用，内存占用 2.197 MB<br />
+    版权所有 &copy; 2005-2012 上海商派网络科技有限公司，并保留所有权利。</div>
+
+<script type='text/javascript'>
+    $(function(){
+        //1.回显
+
+        //2.使用uploadify初始化logo文件框,先写配置后调用
+        $options = {
+            'swf': '__UPLOADIFY__/uploadify.swf',    //固定引入的flash文件
+            'uploader': '{:U("Upload/uploadImg")}',//文件上传用的方法
+            'buttonText':'请选择文件',//改变按钮上的文字
+            'fileObjName':'file_data',//上传控件的name属性，如果不设置使用Filedata，使用此工具，会导致原来的input 文件框name丢失，切记。
+             onUploadSuccess:function(file_item,response){  //插件自有方法，上传成功时的操作
+                 //function中file_item为上传成功时的文件对象信息 ,respone为接收到的值
+                 //先获取传送回来的的数据，并将json转化为对象。
+                 var data= $.parseJSON(response);
+
+                 //根据返回的status来判定是否成功
+                 if(data.status){  //如果是成功
+                     $('#logo').val(data.file_url);//隐藏域：把ID为logo的赋值为data.file_url值
+                     $('#logo_p').attr('src',data.file_url);//回显图片
+                     layer.alert(data.msg,{icon:6});//layer插件显示提示，{icon:6}笑脸
+                 }else{
+                     layer.alert(data.msg,{icon:5});//{icon:5}哭脸
+                 }
+             }
+        };
+        $('#logo_file').uploadify($options);
+    })
+</script>
+
+</body>
+</html>
