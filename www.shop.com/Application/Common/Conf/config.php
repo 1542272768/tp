@@ -89,5 +89,32 @@ return array(
     //cookie加前缀
     'COOKIE_PREFIX'         =>  'www_shop_com_',
 
+    //Session配置
+    'SESSION_AUTO_START'	=>  true,	// 是否自动开启Session
+    'SESSION_TYPE'			=>  'Redis',	//session类型
+    'SESSION_PERSISTENT'    =>  1,		//是否长连接(对于php来说0和1都一样)
+    'SESSION_CACHE_TIME'	=>  1,		//连接超时时间(秒)
+    'SESSION_EXPIRE'		=>  0,		//session有效期(单位:秒) 0表示永久缓存
+    'SESSION_PREFIX'		=>  'sess_',		//session前缀
+    'SESSION_REDIS_HOST'	=>  '127.0.0.1', //分布式Redis,默认第一个为主服务器
+    'SESSION_REDIS_PORT'	=>  '6379',	       //端口,如果相同只填一个,用英文逗号分隔
+    'SESSION_REDIS_AUTH'    =>  '',    //Redis auth认证(密钥中不能有逗号),如果相同只填一个,用英文逗号分隔
+
+    //页面静态化配置
+    'HTML_CACHE_ON' => false,        // 开启静态缓存
+    'HTML_CACHE_TIME' => 60,        // 全局静态缓存有效期（秒）
+    'HTML_FILE_SUFFIX' => '.shtml', // 设置静态缓存文件后缀,页面有shtml即为静态页面
+    'HTML_CACHE_RULES' => array(    // 定义静态缓存规则
+        // 定义格式1:数组方式   'Index:index' => array('静态规则','有效期','附加规则'),
+        //Index控制器:下的所有方法实现静态化=>实现的的命名规则是控制器名_方法名_id值(id用于解决静态页面访问的问题)
+        'Index:' => array('{:controller}_{:action}_{id}'),
+        // 定义格式2 字符串方式  '静态地址' => '静态规则',
+    ),
+
+    //开启数据缓存存入redis机制
+    'DATA_CACHE_TYPE'=>'Redis',
+    'REDIS_HOST'=>'127.0.0.1',
+    'REDIS_PORT'=>6379,
+
 
 );

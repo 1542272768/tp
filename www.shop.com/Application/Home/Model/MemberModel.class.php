@@ -18,7 +18,7 @@ class MemberModel extends Model
     //自动验证
     protected $_validate=[
         ['username','require','用户名不能为空'],
-        ['username','','用户名已存在',self::EXISTS_VALIDATE,'unique'],  //唯一
+        ['username','','用户名已存在',self::EXISTS_VALIDATE,'unique','reg'],  //唯一
         ['password','require','密码不能为空'],
         ['password','6,16','密码必须6-16位',self::EXISTS_VALIDATE,'length'],
         ['repassword','password','两次密码不同',self::EXISTS_VALIDATE,'confirm'],
@@ -27,8 +27,8 @@ class MemberModel extends Model
         ['email','','邮箱已存在',self::EXISTS_VALIDATE,'unique'],
         ['tel','require','手机号码不能为空'],
         ['tel','/^1[34578]\d{9}$/','手机号码不合法',self::EXISTS_VALIDATE,'regex'],
-        ['checkcode','require','验证码不能为空'],
-        ['checkcode','ckcode','验证码不正确',self::EXISTS_VALIDATE,'callback'],
+        //['checkcode','require','验证码不能为空'],
+        //['checkcode','ckcode','验证码不正确',self::EXISTS_VALIDATE,'callback'],
         //验证手机验证号
         ['captcha','require','手机验证码不能为空'],
         ['captcha','ckc','手机验证码不正确',self::EXISTS_VALIDATE,'callback']
@@ -51,10 +51,10 @@ class MemberModel extends Model
     }
     //自动完成入表的字段
     protected $_auto=[
-        ['add_time',NOW_TIME],//注册时间
-        ['salt','\Org\Util\String::randString',self::MODEL_INSERT,'function'],//生成随机盐
-        ['register_token','\Org\Util\String::randString',self::MODEL_INSERT,'function',32],//生成手机的toekn
-        ['ststus',0],//没有通过邮件验证的账号是禁用账户,状态为0,成功的是1
+        ['add_time',NOW_TIME,'reg'],//注册时间
+        ['salt','\Org\Util\String::randString','reg','function'],//生成随机盐
+        ['register_token','\Org\Util\String::randString','reg','function',32],//生成手机的toekn
+        ['ststus',0,'reg'],//没有通过邮件验证的账号是禁用账户,状态为0,成功的是1
     ];
 
     //1.添加会员
@@ -84,6 +84,38 @@ class MemberModel extends Model
                 $this->error = $re['msg'];
                 return false;
             }
+    }
+
+    //2.用户登录:信息存入session 与 购物车商品入数据库
+    public function login() {
+        //2.1检查是否有这个用户
+        $username = $this->data['username'];
+        $password = $this->data['password'];
+        if(!$userinfo = $this->getByUsername($username)){
+            $this->error = '用户名或密码错误';
+            return false;
+        }
+
+        if(salt_mcrypt($password,$userinfo['salt']) != $userinfo['password']){
+            $this->error = '用户名或密码错误';
+            return false;
+        }
+
+        //记录用户的登陆时间
+        $data = [
+            'id'=>$userinfo['id'],
+            'last_login_time'=>NOW_TIME,
+            'last_login_ip'=>get_client_ip(1),
+        ];
+        $this->setField($data);
+        //2.2将用户信息保存到session中.
+        login($userinfo);
+
+        //2.2将cookie中的购物车信息保存到数据库中shopping_car表中
+        $scmodel=D('ShoppingCar');
+        $scmodel->cookie2db();
+
+        return $userinfo;
     }
 
 }

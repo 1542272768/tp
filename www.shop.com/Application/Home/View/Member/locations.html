@@ -1,0 +1,175 @@
+<extend name="Layout:index_base" />
+    <block name="css">
+    <link rel="stylesheet" href="__CSS__/home.css" type="text/css">
+    <link rel="stylesheet" href="__CSS__/address.css" type="text/css">
+    </block>
+
+<block name="content">
+<!-- 页面主体 start -->
+<div class="main w1210 bc mt10">
+    <div class="crumb w1210">
+        <h2><strong>我的XX </strong><span>> 我的订单</span></h2>
+    </div>
+
+    <!-- 左侧导航菜单 start -->
+    <div class="menu fl">
+        <h3>我的XX</h3>
+        <div class="menu_wrap">
+            <dl>
+                <dt>订单中心 <b></b></dt>
+                <dd><b>.</b><a href="">我的订单</a></dd>
+                <dd><b>.</b><a href="">我的关注</a></dd>
+                <dd><b>.</b><a href="">浏览历史</a></dd>
+                <dd><b>.</b><a href="">我的团购</a></dd>
+            </dl>
+
+            <dl>
+                <dt>账户中心 <b></b></dt>
+                <dd class="cur"><b>.</b><a href="">账户信息</a></dd>
+                <dd><b>.</b><a href="">账户余额</a></dd>
+                <dd><b>.</b><a href="">消费记录</a></dd>
+                <dd><b>.</b><a href="">我的积分</a></dd>
+                <dd><b>.</b><a href="">收货地址</a></dd>
+            </dl>
+
+            <dl>
+                <dt>订单中心 <b></b></dt>
+                <dd><b>.</b><a href="">返修/退换货</a></dd>
+                <dd><b>.</b><a href="">取消订单记录</a></dd>
+                <dd><b>.</b><a href="">我的投诉</a></dd>
+            </dl>
+        </div>
+    </div>
+    <!-- 左侧导航菜单 end -->
+
+    <!-- 右侧内容区域 start -->
+    <div class="content fl ml10">
+        <div class="address_hd">
+            <h3>收货地址薄</h3>
+            <foreach name="addresses" item="address">
+                <dl class="<if condition='$key eq count($addresses)-1'>last</if>">
+                    <dt>{$address.id}.{$address.name} {$address.province_name} {$address.city_name} {$address.area_name} {$address.detail_address} {$address.tel} <span><if condition='$address.is_default eq 1'>--默认地址</if></span></dt>
+                    <dd>
+                        <a href="{:U('modifyL',['id'=>$address['id']])}">修改</a>
+                        <a href="">删除</a>
+                        <a href=""><if condition="$address.is_default eq 0">设为默认地址</if></a>
+                    </dd>
+                </dl>
+            </foreach>
+
+        </div>
+
+        <div class="address_bd mt10">
+            <h4>新增收货地址</h4>
+            <form action="{:U('addL')}" name="address_form" method="post">
+                <ul>
+                    <li>
+                        <label for=""><span>*</span>收 货 人：</label>
+                        <input type="text" name="name" class="txt" />
+                    </li>
+                    <li>
+                        <label for=""><span>*</span>所在地区：</label>
+                            <!--把所有的省份，直接加载出来,province_id为保存数据的name-->
+                            {:arr2select($provinces,'name','id','province_id')}
+                            <!--传中文地址回去入库,便于回显,用ajax统一给它们赋值-->
+                            <input type="hidden" name="province_name" class="province_name"/>
+
+
+                            <!--市级城市，通过ajax获取-->
+                            {:arr2select([],'name','id','city_id')}
+                            <input type="hidden" name="city_name" class="city_name"/>
+
+                           <!--区县城市，通过ajax获取，-->
+                           {:arr2select([],'name','id','area_id')}
+                            <input type="hidden" name="area_name" class="area_name"/>
+
+                    </li>
+                    <li>
+                        <label for=""><span>*</span>详细地址：</label>
+                        <input type="text" name="detail_address" class="txt address"  />
+                    </li>
+                    <li>
+                        <label for=""><span>*</span>手机号码：</label>
+                        <input type="text" name="tel" class="txt" />
+                    </li>
+                    <li>
+                        <label for="">&nbsp;</label>
+                        <input type="checkbox" name="is_default" value="1" class="check" />设为默认地址
+                    </li>
+                    <li>
+                        <label for="">&nbsp;</label>
+                        <input type="submit" name="" class="btn" value="保存" />
+                    </li>
+                </ul>
+            </form>
+        </div>
+
+    </div>
+    <!-- 右侧内容区域 end -->
+</div>
+<!-- 页面主体 end-->
+</block>
+
+<block name="js">
+    <script type="text/javascript" src="__JS__/home.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var province_node = $('.province_id');//省份列表的节点
+            var city_node = $('.city_id');//市级城市列表的节点
+            var area_node = $('.area_id');//区县列表的节点
+
+            //1.选中省份后出现市级城市下拉列表
+            var url='{:U("Member/getCityByPid")}';
+            $('.province_id').change(function(){
+                var parent_id=$(this).val();//选中时的省份ID
+                var province_name=province_node.find('option:selected').text();//获取省份中文名
+                $('.province_name').val(province_name);//选中时赋值
+                $('.city_name').val(''); //切换时清空
+                $('.area_name').val(''); //切换时清空
+                var data={parent_id:parent_id};
+                //传方法获取城市数据
+                $.getJSON(url,data,function(cities){
+                    console.debug(cities);
+                    city_node.get(0).length=1;//将市级城市列表清空
+                    area_node.get(0).length=1;//将区县列表清空
+                    var html = '';
+
+                    //遍历所有的市，放到city_id中去
+                    $(cities).each(function(i,v){
+                        html += '<option value="'+ v.id+'" >'+ v.name+'</option>';
+                    });
+                    $(html).appendTo(city_node);
+                })
+            });
+
+            //2.当切换市级的时候，动态获取区县
+            $('.city_id').change(function(){
+                var parent_id=$(this).val();//选中时的城市ID
+                var city_name=city_node.find('option:selected').text();//获取城市中文名
+                $('.city_name').val(city_name); //选中时赋值
+                $('.area_name').val(''); //切换时清空
+                var data={parent_id:parent_id};
+                //用同样的方法(因为都是传的parent_id)获取区县数据
+                $.getJSON(url,data,function(areas){
+                    area_node.get(0).length=1;//将区县列表清空
+                    var html = '';
+
+                    //遍历所有的市，放到city_id中去
+                    $(areas).each(function(i,v){
+                        html += '<option value="'+ v.id+'" >'+ v.name+'</option>';
+                    });
+                    $(html).appendTo(area_node);
+                })
+            });
+            //监听区县的修改时间，当修改的时候将名字放入隐藏域
+            $('.area_id').change(function(){
+                //找到选中时的值
+                var area_name=area_node.find('option:selected').text();//获取区县名称
+                $('.area_name').val(area_name);
+            });
+        });
+
+
+
+    </script>
+</block>

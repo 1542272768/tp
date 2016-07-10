@@ -129,5 +129,18 @@ function sendMail($email,$subject,$content){
     }else{
         return ['status'=>0, 'msg'=>$mail->ErrorInfo,];
     }
-
 }
+
+//9.建立redis类,获得redis
+function get_redis(){
+         $redis=new Redis(); //建类
+         $redis->connect(C('REDIS_HOST'),C('REDIS_PORT'));  //连接
+         return $redis;
+    }
+
+//10.number_format(变量,保留2位,以点分割,千位分隔符):
+//金钱表示形式：100 表示为 100.00()
+function nf($num){
+    return number_format($num,2,'.','');
+}
+

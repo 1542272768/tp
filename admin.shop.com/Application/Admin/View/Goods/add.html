@@ -11,6 +11,9 @@
         .upload-pre-item img{
             width:150px;
         }
+        #logo-preview,.gallery-upload-pre-item img{
+            width:150px;
+        }
 
         .upload-pre-item{
             display:inline-block;
@@ -55,6 +58,15 @@
                     <td><input type="text" name="name" value=""size="30" />
                         <span class="require-field">*</span></td>
                 </tr>
+
+                <tr>
+                    <td class="label">LOGO：</td>
+                    <td>
+                        <input type="hidden" name="logo" id="logo" value="{$row.logo}" size="30" />
+                        <img src="{$row.logo}" id="logo-preview"/>
+                        <input type="file" id="goods_logo"/>
+                </tr>
+
                 <tr>
                     <td class="label">商品货号： </td>
                     <td>
@@ -174,8 +186,8 @@
 
 <script type="text/javascript">
 
-        //1.ueditor作用于商品详细描述
-        var ue=UE.getEditor('editor');
+        //1.ueditor作用于商品详细描述(后面的是发送图片地址进行存储)
+        var ue = UE.getEditor('editor',{serverUrl: '{:U('Editor/ueditor')}'});
 
         //2.zTree实现商品分类
         //2.1写设置
@@ -264,6 +276,25 @@
                 layer.alert('删除成功',{icon:6})
             }
         })
+        //////////////////////6.使用uploadify上传logo ////////////////////////////////
+        logo_options = {
+            swf:'__UPLOADIFY__/uploadify.swf',
+            uploader:'{:U("Upload/uploadImg")}',
+            buttonText:' 选择文件 ',
+            fileObjName:'file_data',
+            onUploadSuccess:function(file_item,response){
+                //根据返回的status来判定是否成功
+                var data = $.parseJSON(response);
+                if(data.status){
+                    $('#logo').val(data.file_url);
+                    $('#logo-preview').attr('src',data.file_url);
+                    layer.alert(data.msg, {icon: 6});
+                }else{
+                    layer.alert(data.msg, {icon: 5});
+                }
+            },
+        };
+        $('#goods_logo').uploadify(logo_options);
 
 </script>
 </body>
