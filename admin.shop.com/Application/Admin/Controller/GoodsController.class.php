@@ -115,6 +115,11 @@ class GoodsController extends Controller
             $rows2=$smodel->getList();
             $this->assign('suppliers',$rows2);
 
+            //4.回显会员等级列表
+            $mlmodel=D('MemberLevel');
+            $member_levels=$mlmodel->getList();
+            $this->assign('member_levels',$member_levels);
+
             $this->display();
         }
     }
@@ -148,6 +153,11 @@ class GoodsController extends Controller
             $smodel=D('Supplier');
             $rows2=$smodel->getList();
             $this->assign('suppliers',$rows2);
+
+            //4.回显会员等级列表
+            $mlmodel=D('MemberLevel');
+            $member_levels=$mlmodel->getList();
+            $this->assign('member_levels',$member_levels);
 
             $this->display();
         }

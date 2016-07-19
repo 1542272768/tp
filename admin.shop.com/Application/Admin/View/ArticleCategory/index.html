@@ -16,13 +16,12 @@
     <div style="clear:both"></div>
 </h1>
 <form action="{:U('index')}" method="post">
-<select name="pid">
+<select name="pid" value="">
+    <option value="0">请选择</option>
     <foreach name="row" item="row1">
-        <option value="{$row1.id}">{$row1.name}</option>
-        <!--<input type="hidden" value="{$row1.id}" name="pid"/>-->
+            <option value="{$row1.id}">{$row1.name}</option>
     </foreach>
 </select>
-    {:arr2select($row,'name','id','id',I('get.id'))}
 <input type="submit" value="确认">
 </form>
 

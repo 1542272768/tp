@@ -100,3 +100,33 @@ function permission_pids($data=null){
         session('PERMISSION_PIDS',$data);
     }
 }
+
+//8.利用PHPmail发送邮件给别人的操作
+function sendMail($email,$subject,$content){
+    //引入PHPmail
+    Vendor('PHPMailer.PHPMailerAutoload');
+    //创类
+    $mail=new \PHPMailer();
+    $mail->isSMTP();                          // 用SMTP方式方式邮件
+    $mail->Host       = 'smtp.163.com';       //填写发送邮件的服务器地址,固定
+    $mail->SMTPAuth   = true;                 // 使用smtp验证
+    $mail->Username   = 'aa412300963@163.com';  // 发件人账号名(邮箱帐号)
+    $mail->Password   = 'GG189189';            // 授权码(邮箱密码)
+    $mail->SMTPSecure = 'ssl';                 // 使用协议,具体是什么根据你的邮件服务商来确定
+    $mail->Port       = 465;                  // 使用的端口
+
+    $mail->setFrom('aa412300963@163.com', 'YM商城');  //发件邮箱,发件人名字,注意:邮箱地址必须和上面的$mail->Username一致
+    $mail->addAddress($email);                     // 收件人
+    $mail->isHTML(true);                           // 是否是html格式的邮件
+
+    $mail->Subject = $subject;   //发送的标题
+    $mail->Body    = $content;   //发送的正文
+    $mail->CharSet = 'UTF-8';    //发送的格式
+
+    //调用发送
+    if($mail->send()){  //如果发送成功
+        return ['status'=>1, 'msg'=>'发送成功',];//返回信息,设置为激活状态
+    }else{
+        return ['status'=>0, 'msg'=>$mail->ErrorInfo,];
+    }
+}

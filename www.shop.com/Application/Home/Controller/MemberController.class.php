@@ -167,28 +167,69 @@ class MemberController extends Controller
     public function addL(){
         $amodel = D('Address');
         if($amodel->create()===false){
-            $this->error(get_error($amodel));
+            $this->error(getErr($amodel));
         }
         if($amodel->addL()===false){
-            $this->error(get_error($amodel));
+            $this->error(getErr($amodel));
         }
         $this->success('添加完成',U('locations'));
     }
 
-    //回显修改收获地址的页面
+    //9.编辑收获地址
     public function modifyL($id){
-        //回显当前地址的详细信息
-        $address_model = D('Address');
-        $row = $address_model->getAddressInfo($id);
-        $this->assign('row',$row);
+        if(IS_POST){
+            $amodel = D('Address');
+            if($amodel->create()===false){
+                $this->error(getErr($amodel));
+            }
+            if($amodel->saveL()===false){
+                $this->error(getErr($amodel));
+            }
+            $this->success('修改成功',U('locations'));
+        }else{
+            //回显当前地址的详细信息
+            $address_model = D('Address');
+            $row = $address_model->getAddressInfo($id);
+            $this->assign('row',$row);
 
-        //回显三级联动下拉框
-        $location_model = D('Locations');
-        $provices = $location_model->getListByPid();
-        $this->assign('provinces',$provices);
+            //回显三级联动下拉框
+            $location_model = D('Locations');
+            $provices = $location_model->getListByPid();
+            $this->assign('provinces',$provices);
 
-        $this->display();
+            $this->display();
+        }
     }
+
+    //10.删除收获地址
+    public function remove($id){
+        $amodel = D('Address');
+        if($amodel->delete($id)===false){
+            $this->error='删除失败';
+        }else{
+            $this->success('删除成功',U("locations"));
+        }
+    }
+    //11.设置默认地址
+    public function setA($id){
+        //先让所有is_default为0
+        $userInfo=Login();
+        $amodel = D('Address');
+        if(isset($id)){   //只要点了设置按钮,就让is_default为0
+            $amodel->where(['member_id'=>$userInfo['id']])->setField('is_default',0);
+        }
+        //然后让一个为1(本页面设置???)
+        //return $amodel->where(['id'=>$id])->setField('is_default',1);
+        $re=$amodel->where(['id'=>$id])->setField('is_default',1);
+        if($re===false){
+            $this->error='设置失败';
+        }else{
+            $this->success('设置成功',U("locations"));
+        }
+
+    }
+
+
 
 
 

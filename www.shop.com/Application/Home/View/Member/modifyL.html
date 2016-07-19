@@ -46,7 +46,7 @@
         <div class="content fl ml10">
             <div class="address_bd mt10">
                 <h4>修改收货地址</h4>
-                <form action="{:U('addL')}" name="address_form" method="post">
+                <form action="{:U('modifyL')}" name="address_form" method="post">
                     <ul>
                         <li>
                             <label for=""><span>*</span>收 货 人：</label>
@@ -75,14 +75,14 @@
                             <label for=""><span>*</span>手机号码：</label>
                             <input type="text" name="tel" class="txt" value="{$row.tel}"/>
                         </li>
+                        <!--<li>-->
+                            <!--<label for="">&nbsp;</label>-->
+                            <!--<input type="checkbox" name="is_default" value="1" class="check is_default"/>设为默认地址-->
+                        <!--</li>-->
                         <li>
                             <label for="">&nbsp;</label>
-                            <input type="checkbox" name="is_default" value="1" class="check is_default"/>设为默认地址
-                        </li>
-                        <li>
-                            <label for="">&nbsp;</label>
-                            <input type="submit" name="" class="btn"
-                                   value="保存"/>
+                            <input type="submit" name="" class="btn" value="保存"/>
+                            <input type="hidden" name="id" value="{$row.id}">
                         </li>
                     </ul>
                 </form>

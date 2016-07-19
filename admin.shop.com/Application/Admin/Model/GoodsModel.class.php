@@ -114,6 +114,28 @@ class GoodsModel extends Model
             $this->rollback();
             return false;
         };
+
+        //4.添加会员价格(member_goods_price)
+        $mgpmodel=D('MemberGoodsPrice');
+        $member_prices=I('post.member_level_price');
+        $data=[];
+        foreach($member_prices as $key=>$val){
+            //如果没有设置这个会员的价格，就不插入数据
+            if(!$val){
+                continue;
+            }
+            $data[]=[
+                'goods_id'=>$goods_id,
+                'member_level_id'=>$key,
+                'price'=>$val
+            ];
+        }
+        //执行添加会员价操作(三个框,如果都没填,插入空数组报错,所以就加个$data &&)
+        if($data && ($mgpmodel->addAll($data)===false)){
+            $this->error = '保存会员价失败';
+            $this->rollback();
+            return false;
+        }
         //事务提交
         $this->commit();
         return true;
@@ -163,6 +185,10 @@ class GoodsModel extends Model
         //4.商品相册表获取相册地址
         $ggmodel = M('GoodsGallery');
         $row['galleries']=$ggmodel->getFieldByGoodsId($id,'id,path');
+
+        //获取会员价格
+        $member_goods_price_model = M('MemberGoodsPrice');
+        $row['member_prices'] = $member_goods_price_model->where(['goods_id'=>$id])->getField('member_level_id,price');
         return $row;
     }
 
@@ -202,10 +228,35 @@ class GoodsModel extends Model
             $this->rollback();
             return false;
         };
-
+        //4.编辑会员价格
+        //4.1先删除原来全部的
+        $mgpmodel=D('MemberGoodsPrice');
+        $mgpmodel->where(['goods_id'=>$goodsId['id']])->delete();
+        //4.2再添加新的进去
+        $member_prices=I('post.member_level_price');
+        $data=[];
+        foreach($member_prices as $key=>$val){
+            //如果没有设置这个会员的价格，就不插入数据
+            if(!$val){
+                continue;
+            }
+            $data[]=[
+                'goods_id'=>$goodsId['id'],
+                'member_level_id'=>$key,
+                'price'=>$val
+            ];
+        }
+        //执行添加会员价操作(三个框,如果都没填,插入空数组报错,所以就加个$data &&)
+        if($data && ($mgpmodel->addAll($data)===false)){
+            $this->error = '保存会员价失败';
+            $this->rollback();
+            return false;
+        }
         $this->commit();
         return true;
     }
+
+
 
 
 

@@ -51,8 +51,8 @@
                     <dt>{$address.id}.{$address.name} {$address.province_name} {$address.city_name} {$address.area_name} {$address.detail_address} {$address.tel} <span><if condition='$address.is_default eq 1'>--默认地址</if></span></dt>
                     <dd>
                         <a href="{:U('modifyL',['id'=>$address['id']])}">修改</a>
-                        <a href="">删除</a>
-                        <a href=""><if condition="$address.is_default eq 0">设为默认地址</if></a>
+                        <a href="{:U('remove',['id'=>$address['id']])}">删除</a>
+                        <a href="{:U('setA',['id'=>$address['id']])}"><if condition="$address.is_default eq 0">设为默认地址</if></a>
                     </dd>
                 </dl>
             </foreach>

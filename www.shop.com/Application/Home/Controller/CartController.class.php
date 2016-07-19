@@ -34,10 +34,11 @@ class CartController extends Controller
              //获取当前商品购物车数量
                 $shopping_car_model = D('ShoppingCar');
                 $num=$shopping_car_model->getNumByGd($id);
+                //dump($num);
             //判断数量
-            if($num){//如果数据库中有数据,就加数量
+            if($num){  //如果数据库中有数据,就加数量
                 $shopping_car_model->addNum($id,$amount);
-            }else{//如果数据库中没有有数据,就新增
+            }else{     //如果数据库中没有有数据,就新增
                 $shopping_car_model->add2car($id,$amount);
             }
         }
@@ -77,9 +78,22 @@ class CartController extends Controller
         if(!$userInfo){
             cookie('this_html',__SELF__);//将当前页保存到cookie中便于登录后跳转
             $this->error('请先登录',U('Member/login'));
-        }else{
-            $this->display();
-        }
+        }else{ //数据回显
+                //1.收货人信息
+                $amodel = D('Address');
+                $this->assign('addresses',$amodel->getList());
+                //2.送货方式
+                $dmodel=D('Delivery');
+                $this->assign('deliveries',$dmodel->getList());
+                //3.支付方法
+                $pmodel=D('Payment');
+                $this->assign('payments',$pmodel->getList());
+                //4.商品详细信息 return的compact
+                $scmodel=D('ShoppingCar');
+                $this->assign($scmodel->getShopList());
+                $this->display();
+            }
+
     }
 
 

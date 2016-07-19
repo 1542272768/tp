@@ -17,7 +17,7 @@ class ShoppingCarModel extends Model
     public function getNumByGd($id){
         $userinfo=Login();
         $cond=['member_id'=>$userinfo['id'], 'goods_id'=>$id,];
-        $this->where($cond)->getField('amount');
+        return $this->where($cond)->getField('amount');
     }
 
   //2.更新购物车中商品数量
@@ -76,9 +76,34 @@ class ShoppingCarModel extends Model
 
         //组合数据返回给页面
         $total_price=0.00;   //设置总价初始值
+
+        //获得用户会员价的操作步骤:
+        //获取会员积分
+        $score=M('Member')->where(['id'=>$userInfo['id']])->getField('score');
+        //获取会员等级
+        $cond=[
+          'bottom'=>['elt',$score],  // 积分>=最低值
+            'top'=>['egt',$score],   // 积分<=最高值
+        ];
+        $member_level = M('MemberLevel')->where($cond)->field('id,discount')->find();
+        $mId=$member_level['id'];
+        $mDiscount=$member_level['discount'];
+        //获取会员价格
+        $member_goods_price_model = M('MemberGoodsPrice');
         foreach($car_list as $goods_id=>$amount){    //设置html页面需要的值
+            //获取当前商品的会员价
+            $cond=['goods_id'=>$goods_id,'member_level_id'=>$mId];
+            $mprice=$member_goods_price_model->where($cond)->getField('price');
+            //判读商品是否有会员价格
+            if($mprice){     //如果有会员价就直接用
+                $goods_info_list[$goods_id]['shop_price']=nf($mprice);
+            }elseif($mId){  //如果会员ID存在,且没有会员价,则按会员等级打折
+                $goods_info_list[$goods_id]['shop_price']=nf($goods_info_list[$goods_id]['shop_price']* $mDiscount / 100);
+            }else{          //如果会员ID不存在
+                $goods_info_list[$goods_id]['shop_price']=nf($goods_info_list[$goods_id]['shop_price']);
+            }
+
             $goods_info_list[$goods_id]['amount']=$amount;
-            $goods_info_list[$goods_id]['shop_price']=nf($goods_info_list[$goods_id]['shop_price']);
             $goods_info_list[$goods_id]['sub_price']=nf($goods_info_list[$goods_id]['shop_price']*$amount);
             $total_price+=$goods_info_list[$goods_id]['sub_price'];
         }
@@ -86,11 +111,18 @@ class ShoppingCarModel extends Model
         return compact('goods_info_list','total_price');
     }
 
-    //6.登陆时删除商品
+    //6.登陆时购物车页面删除商品
     public function deleteC($id){
         $userinfo=Login();
         $cond=['goods_id'=>$id,'member_id'=>$userinfo['id']];
         $this->where($cond)->delete();
+    }
+
+    //7.订单结算后删除购物车
+    public function clearCar(){
+        $userinfo=Login();
+        $cond=['member_id'=>$userinfo['id']];
+        return $this->where($cond)->delete();
     }
 
 }

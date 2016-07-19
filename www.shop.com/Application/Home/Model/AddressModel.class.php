@@ -45,13 +45,17 @@ class AddressModel extends Model
     }
 
     //3.获取某人收获地址进行回显
-    public function getAddressInfo($id){
+    public function getAddressInfo($id,$field='*'){
         $userinfo = login();
         $cond = [
             'member_id'=>$userinfo['id'],
             'id'=>$id,
         ];
-        return $this->where($cond)->find();
+        return $this->field($field)->where($cond)->find();
+    }
+    //4.编辑收货地址
+    public function saveL(){
+        return $this->save();
     }
 
 

@@ -105,6 +105,17 @@
                         <span class="require-field">*</span>
                     </td>
                 </tr>
+
+                <tr>
+                    <td class="label">会员价： </td>
+                    <td>
+                        <foreach name="member_levels" item="member_level">
+                            {$member_level.name}<input type="text" name="member_level_price[{$member_level.id}]" value="{$row['member_prices'][$member_level['id']]}" size="20"/> <br />
+                        </foreach>
+
+                    </td>
+                </tr>
+
                 <tr>
                     <td class="label">市场售价：</td>
                     <td>
@@ -262,30 +273,36 @@
     };
     $('#goods_gallery').uploadify($options);
 
-    ////////////////////////////5.通过ajax删除相册   ///////////////////////
+    ///////////////////////  5.通过ajax删除相册   ///////////////////////
     //使用事件委托(作用是针对于编辑时新增的图片,只能用委托) on(点击事件,a标签,函数)
     $('.gallery-upload-img-box').on('click','a',function(){
-        //删除图片(一种是已存在的:a标签上有data属性,一种是新增的:a标签上没有data属性)
-        var id = $(this).attr('data');   //获取data属性
-        var parent_node=$(this).parent();
-        //进行判断
-        if(id){  //如果有data属性,就要删除数据库中数据
-            var url='{:U("Goods/removeGallery")}'; //定义操作方法
-            var data={id:id,};  //id:id=>属性名字(可加可不加引号):变量
-            $.getJSON(url,data,function(response){  //传数据进行图片删除
-                //接收数据判断是否删除成功
+          //删除图片(一种是已存在的:a标签上有data属性,一种是新增的:a标签上没有data属性)
+        var id = $(this).attr('data');  //获取data属性
+        var flag = true;
+        var parent_node = $(this).parent();
+        //删除数据库的记录,使用ajax
+        // 进行判断;
+        if(id){     //如果有data属性,就要删除数据库中数据
+            var url = '{:U("Goods/removeGallery")}';  //定义操作方法
+            var data = {id:id,};           //id:id=>属性名字(可加可不加引号):变量
+            $.getJSON(url,data,function(response){   //传数据进行图片删除
+                //判断是否删除成功
                 if(!response.status){
-                    layer.alert('删除失败',{icon:5});//失败,提示错误
-                }else{
-                    layer.alert('删除成功',{icon:6});//成功,删除节点
+                    //失败,提示错误
+                    flag = false;
                 }
-            })
-        }else{  //如果没有data属性,则直接删除DIV
-            //获取父级节点,来删除div
-            parent_node.remove();
-            layer.alert('删除成功',{icon:6})
+            });
         }
-    })
+        if(flag){
+            //移除div
+            parent_node.remove();
+            layer.alert('删除成功',{icon:6});
+        }else{
+            layer.alert('删除失败',{icon:5});
+        }
+        //移除div
+        return false;
+    });
 
     //========================  使用uploadify上传logo   ========================
     logo_options = {
